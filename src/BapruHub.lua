@@ -62,6 +62,7 @@ function BapruHub.new(config, catalog)
     self.Notifications.Holder = self.Gui
     self.State:Bootstrap(self.Catalog)
     self:_build()
+    self:_buildWelcome()
     self:_bindDrag()
     self:_bindKeyboard()
     self:Notify("Welcome", (self.Config.Title or "Bapru Hub") .. " is ready.", "success")
@@ -178,6 +179,219 @@ function BapruHub:_build()
 
     self:_buildCatalog()
     self:_fitToViewport()
+end
+
+function BapruHub:_buildWelcome()
+    local t = self.Theme
+    local overlay = make("Frame", {
+        Name = "WelcomeOverlay",
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.new(0, 0, 0),
+        BackgroundTransparency = 0.4,
+        BorderSizePixel = 0,
+        ZIndex = 200,
+    }, self.Gui)
+    self.WelcomeOverlay = overlay
+
+    local card = make("Frame", {
+        Name = "WelcomeCard",
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.fromScale(0.5, 0.5),
+        Size = UDim2.fromOffset(450, 310),
+        BackgroundColor3 = t.Background,
+        BorderSizePixel = 0,
+        ClipsDescendants = true,
+        ZIndex = 201,
+    }, overlay)
+    self.WelcomeCard = card
+    round(card, 14)
+    outline(card, t.Accent)
+
+    local camera = workspace.CurrentCamera
+    if camera then
+        local scale = make("UIScale", { Scale = 1 }, card)
+        local function updateScale()
+            local viewport = camera.ViewportSize
+            scale.Scale = math.max(0.5, math.min(1, (viewport.X - 24) / 450, (viewport.Y - 24) / 310))
+        end
+        updateScale()
+        table.insert(self.Connections, camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale))
+    end
+
+    local function addLabel(parent, text, position, size, textSize, color, font, zIndex)
+        local label = make("TextLabel", {
+            BackgroundTransparency = 1,
+            Position = position,
+            Size = size,
+            Font = font or Enum.Font.Gotham,
+            Text = text,
+            TextColor3 = color,
+            TextSize = textSize,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextYAlignment = Enum.TextYAlignment.Center,
+            TextTruncate = Enum.TextTruncate.AtEnd,
+            ZIndex = zIndex or 204,
+        }, parent)
+        return label
+    end
+
+    local header = make("Frame", {
+        Name = "WelcomeHeader",
+        Size = UDim2.new(1, 0, 0, 44),
+        BackgroundColor3 = t.Surface,
+        BorderSizePixel = 0,
+        ZIndex = 202,
+    }, card)
+    addLabel(header, "BAPRU HUB  /  STUDIO", UDim2.fromOffset(14, 0), UDim2.new(1, -130, 1, 0), 13, t.Text, Enum.Font.GothamBold)
+
+    local studioBadge = make("Frame", {
+        Position = UDim2.new(1, -71, 0.5, -10),
+        Size = UDim2.fromOffset(62, 20),
+        BackgroundColor3 = Color3.fromRGB(28, 54, 40),
+        BorderSizePixel = 0,
+        ZIndex = 203,
+    }, header)
+    round(studioBadge, 5)
+    addLabel(studioBadge, "READY", UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), 9, t.Success, Enum.Font.GothamBold, 204).TextXAlignment = Enum.TextXAlignment.Center
+
+    local function makePanel(name, position, size)
+        local panel = make("Frame", {
+            Name = name,
+            Position = position,
+            Size = size,
+            BackgroundColor3 = t.Surface,
+            BorderSizePixel = 0,
+            ZIndex = 202,
+        }, card)
+        round(panel, 8)
+        outline(panel, t.Border)
+        return panel
+    end
+
+    local infoPanel = makePanel("SessionInfo", UDim2.fromOffset(8, 52), UDim2.fromOffset(180, 86))
+    addLabel(infoPanel, "SESSION INFO", UDim2.fromOffset(9, 4), UDim2.new(1, -18, 0, 16), 9, t.AccentAlt, Enum.Font.GothamBold)
+    make("Frame", {
+        Position = UDim2.fromOffset(8, 23),
+        Size = UDim2.new(1, -16, 0, 1),
+        BackgroundColor3 = t.Border,
+        BorderSizePixel = 0,
+        ZIndex = 203,
+    }, infoPanel)
+    addLabel(infoPanel, "Place ID", UDim2.fromOffset(9, 29), UDim2.new(0, 57, 0, 16), 9, t.Muted)
+    addLabel(infoPanel, tostring(game.PlaceId), UDim2.new(0, 67, 0, 29), UDim2.new(1, -76, 0, 16), 9, t.Text)
+    addLabel(infoPanel, "Version", UDim2.fromOffset(9, 50), UDim2.new(0, 57, 0, 16), 9, t.Muted)
+    addLabel(infoPanel, "v" .. tostring(self.Config.Version or "1.0.0"), UDim2.new(0, 67, 0, 50), UDim2.new(1, -76, 0, 16), 9, t.Text)
+
+    local profilePanel = makePanel("Profile", UDim2.fromOffset(8, 146), UDim2.fromOffset(180, 156))
+    addLabel(profilePanel, "PLAYER PROFILE", UDim2.fromOffset(9, 4), UDim2.new(1, -18, 0, 16), 9, t.AccentAlt, Enum.Font.GothamBold)
+    make("Frame", {
+        Position = UDim2.fromOffset(8, 23),
+        Size = UDim2.new(1, -16, 0, 1),
+        BackgroundColor3 = t.Border,
+        BorderSizePixel = 0,
+        ZIndex = 203,
+    }, profilePanel)
+
+    local avatar = make("ImageLabel", {
+        Name = "Avatar",
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.new(0.5, 0, 0, 31),
+        Size = UDim2.fromOffset(52, 52),
+        BackgroundColor3 = t.SurfaceRaised,
+        BorderSizePixel = 0,
+        Image = "",
+        ZIndex = 203,
+    }, profilePanel)
+    round(avatar, 26)
+
+    local displayName = self.Player.DisplayName or self.Player.Name
+    addLabel(profilePanel, displayName, UDim2.new(0, 8, 0, 87), UDim2.new(1, -16, 0, 18), 11, t.Text, Enum.Font.GothamBold, 204).TextXAlignment = Enum.TextXAlignment.Center
+    addLabel(profilePanel, "@" .. self.Player.Name, UDim2.new(0, 8, 0, 107), UDim2.new(1, -16, 0, 15), 9, t.Muted, Enum.Font.Gotham, 204).TextXAlignment = Enum.TextXAlignment.Center
+    addLabel(profilePanel, "Roblox Studio session", UDim2.new(0, 8, 0, 129), UDim2.new(1, -16, 0, 15), 9, t.Success, Enum.Font.GothamMedium, 204).TextXAlignment = Enum.TextXAlignment.Center
+
+    task.spawn(function()
+        local ok, image = pcall(function()
+            return Players:GetUserThumbnailAsync(self.Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+        end)
+        if ok and avatar.Parent then
+            avatar.Image = image
+        elseif not ok then
+            warn("[BapruHub] Player thumbnail unavailable: " .. tostring(image))
+        end
+    end)
+
+    local statusPanel = makePanel("WelcomeStatus", UDim2.fromOffset(198, 52), UDim2.fromOffset(244, 56))
+    local statusDot = make("Frame", {
+        Position = UDim2.fromOffset(12, 14),
+        Size = UDim2.fromOffset(7, 7),
+        BackgroundColor3 = t.Success,
+        BorderSizePixel = 0,
+        ZIndex = 204,
+    }, statusPanel)
+    round(statusDot, 4)
+    addLabel(statusPanel, "SAFE STUDIO UI", UDim2.fromOffset(26, 7), UDim2.new(1, -34, 0, 16), 10, t.Success, Enum.Font.GothamBold)
+    addLabel(statusPanel, "No executor or external loader needed.", UDim2.fromOffset(12, 29), UDim2.new(1, -22, 0, 17), 9, t.Muted)
+
+    local statePanel = makePanel("LocalStatus", UDim2.fromOffset(198, 118), UDim2.fromOffset(244, 30))
+    addLabel(statePanel, "●", UDim2.fromOffset(9, 0), UDim2.fromOffset(14, 30), 9, t.Success, Enum.Font.GothamBold)
+    addLabel(statePanel, "Interface ready", UDim2.fromOffset(27, 0), UDim2.new(1, -36, 1, 0), 10, t.Text, Enum.Font.GothamMedium)
+
+    local search = make("TextBox", {
+        Name = "WelcomeSearch",
+        Position = UDim2.fromOffset(198, 158),
+        Size = UDim2.fromOffset(244, 34),
+        BackgroundColor3 = t.SurfaceRaised,
+        PlaceholderText = "Search Bapru Hub features...",
+        PlaceholderColor3 = t.Muted,
+        Text = "",
+        TextColor3 = t.Text,
+        TextSize = 10,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        BorderSizePixel = 0,
+        ZIndex = 203,
+    }, card)
+    round(search, 7)
+    outline(search, t.Border)
+    search:GetPropertyChangedSignal("Text"):Connect(function()
+        self:_filter(search.Text)
+    end)
+
+    local function makeButton(name, text, position, color, callback)
+        local button = make("TextButton", {
+            Name = name,
+            Position = position,
+            Size = UDim2.fromOffset(118, 32),
+            BackgroundColor3 = color,
+            BorderSizePixel = 0,
+            Text = text,
+            TextColor3 = t.Text,
+            TextSize = 10,
+            Font = Enum.Font.GothamBold,
+            AutoButtonColor = false,
+            ZIndex = 203,
+        }, card)
+        round(button, 7)
+        button.MouseButton1Click:Connect(callback)
+        return button
+    end
+
+    makeButton("OpenHub", "OPEN BAPRU HUB", UDim2.fromOffset(198, 202), t.Accent, function()
+        self:_closeWelcome()
+    end)
+    makeButton("ClearSearch", "CLEAR SEARCH", UDim2.fromOffset(324, 202), t.SurfaceRaised, function()
+        search.Text = ""
+    end)
+    addLabel(card, "A local interface scaffold for Roblox experiences you own.", UDim2.fromOffset(198, 244), UDim2.fromOffset(244, 34), 9, t.Muted)
+end
+
+function BapruHub:_closeWelcome()
+    local overlay = self.WelcomeOverlay
+    self.WelcomeOverlay = nil
+    self.WelcomeCard = nil
+    if overlay then
+        overlay:Destroy()
+    end
 end
 
 function BapruHub:_fitToViewport()

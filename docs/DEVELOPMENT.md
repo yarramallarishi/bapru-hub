@@ -7,6 +7,7 @@
 - Keep tab and control declarations in `FeatureCatalog.lua`.
 - Keep lifecycle and reusable UI logic in `BapruHub.lua` and the support modules under `Core/` and `UI/`.
 - Keep the bootstrap script minimal.
+- Keep the welcome panel presentation-only; it must not collect keys or load remote code.
 - Preserve the reference feature names as catalog entries without implementing exploit functionality.
 - Keep the official project name as Bapru Hub throughout the codebase and documentation.
 

@@ -7,6 +7,7 @@ A modular Roblox client-side UI framework and project scaffold inspired by the r
 ## Features
 
 - Dark, responsive Bapru Hub interface
+- Purple welcome panel with player profile, session status, and feature search
 - Sidebar navigation and searchable feature catalog
 - Reusable buttons, toggles, sliders, labels, and notifications
 - Central configuration defaults
