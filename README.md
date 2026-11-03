@@ -1,12 +1,12 @@
 # Bapru Hub
 
-A modular Roblox client-side UI framework and project scaffold using the QuantumHub concept as a visual and organizational reference.
+A modular Roblox client-side UI framework and project scaffold inspired by the reference hub concept, reworked as a clean Bapru Hub implementation.
 
 > This repository contains interface infrastructure and benign client-side utilities. It does not include executor APIs, game-specific exploit automation, remote abuse, automated combat/farming, or anti-cheat bypasses.
 
 ## Features
 
-- Dark, responsive QuantumHub-inspired interface
+- Dark, responsive Bapru Hub interface
 - Sidebar navigation and searchable feature catalog
 - Reusable buttons, toggles, sliders, labels, and notifications
 - Central configuration defaults
@@ -17,11 +17,12 @@ A modular Roblox client-side UI framework and project scaffold using the Quantum
 ## Install in Roblox Studio
 
 1. Create a new `ScreenGui`-based LocalScript project or open an existing place.
-2. Put `src/QuantumHub.lua` in a `ModuleScript` named `QuantumHub` under `ReplicatedStorage`.
+2. Put `src/BapruHub.lua` in a `ModuleScript` named `BapruHub` under `ReplicatedStorage`.
 3. Put `src/Bootstrap.client.lua` in `StarterPlayer > StarterPlayerScripts`.
-4. Put `src/Config.lua` in a `ModuleScript` named `Config` under the same parent as `QuantumHub`.
-5. Put `src/FeatureCatalog.lua` in a `ModuleScript` named `FeatureCatalog` under the same parent as `QuantumHub`.
-6. Update the `require` paths in `Bootstrap.client.lua` if you use a different hierarchy.
+4. Put `src/Config.lua` in a `ModuleScript` named `Config` under the same parent as `BapruHub`.
+5. Put `src/FeatureCatalog.lua` in a `ModuleScript` named `FeatureCatalog` under the same parent as `BapruHub`.
+6. If you want the modular layout, also copy the `Core`, `Features`, and `UI` folders into the same `ReplicatedStorage` parent as `BapruHub`.
+7. Update the `require` paths in `Bootstrap.client.lua` if you use a different hierarchy.
 
 ## Project layout
 
@@ -33,18 +34,33 @@ bapru-hub/
 ├── version.txt
 ├── src/
 │   ├── Bootstrap.client.lua
-│   ├── QuantumHub.lua
+│   ├── BapruHub.lua
 │   ├── Config.lua
-│   └── FeatureCatalog.lua
+│   ├── FeatureCatalog.lua
+│   ├── Core/
+│   │   ├── Cleanup.lua
+│   │   ├── ErrorHandler.lua
+│   │   ├── StateManager.lua
+│   │   └── TaskManager.lua
+│   ├── Features/
+│   │   ├── Dashboard.lua
+│   │   ├── FeatureModules.lua
+│   │   └── Inventory.lua
+│   └── UI/
+│       ├── Components.lua
+│       ├── Notifications.lua
+│       └── Theme.lua
 └── docs/
     └── DEVELOPMENT.md
 ```
+
+This keeps the reference project’s overall layout and feature naming while separating UI, state, cleanup, and feature metadata into safer, easier-to-maintain modules and finalizing the Bapru Hub identity.
 
 ## Publishing
 
 Upload the repository contents to your GitHub repository `yarramallarishi/bapru-hub`.
 The main module's Raw URL will follow this pattern:
 
-`https://raw.githubusercontent.com/yarramallarishi/bapru-hub/main/src/QuantumHub.lua`
+`https://raw.githubusercontent.com/yarramallarishi/bapru-hub/main/src/BapruHub.lua`
 
 For normal Roblox Studio projects, use ModuleScripts and `require`. Do not use executor-only `loadstring(game:HttpGet(...))()` loaders.
